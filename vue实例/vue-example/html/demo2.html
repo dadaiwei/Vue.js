@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="../js/vue.min.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			<ol>
+				<list-item ref="list" v-for="(item, index) in list" :key="index" :todo="item"></list-item>
+			</ol>
+			<select v-model="selected">
+			  <option v-for="option in options" v-bind:value="option.value">
+			    {{ option.text }}
+			  </option>
+			</select>
+			<span>Selected: {{ selected }}</span>
+			<p ref="p">This is paragraph.</p>
+		</div>
+		
+		<script>
+			Vue.component("list-item", {
+				props: {
+					todo: {
+						type: String,
+						required: true,
+					}
+				},
+				template: "<li>{{todo.text}}</li>"
+			})
+			
+			var vm = new Vue({
+					el: "#app",
+					data: {
+						list: [
+							{"text": "text1"},
+							{"text": "text2"},
+							{"text": "text3"},
+						],
+						selected: 'A',
+					    options: [
+					      { text: 'One', value: 'A' },
+					      { text: 'Two', value: 'B' },
+					      { text: 'Three', value: 'C' }
+					    ]
+					}
+			});
+			console.log(vm.$refs);
+		</script>
+	</body>
+</html>

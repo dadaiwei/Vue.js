@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/vuex.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			<button type="button" @click="increase">增加</button>
+			<Counter></Counter>
+			<my-component></my-component>
+		</div>
+		<script>
+			
+			
+			var store = new Vuex.Store({
+				state: {
+					count: 0
+				},
+				getters: {
+					todos(state) {
+						return state.count + 100;
+					},
+					todoLength(state, getters){
+						return getters.todos + 1000;
+					}
+				},
+				mutations: {
+					increment(state, payload){
+						state.count += payload.n;
+					}
+				},
+				actions: {
+					increment1(context){
+						context.commit("increment");
+					}
+				}
+			});
+			
+			
+			console.log(store.getters.todos);
+			
+			
+			var mapState = new Vuex.mapState({});
+			
+			var Counter = {
+			  template: `<div>state的值为{{ count }}</div>`,
+			  computed: {
+			    count () {
+			      return this.$store.state.count;
+			    }
+			  }
+			}
+			
+			var myComponent =  {
+			  template: `<div>state的值为{{ count }}</div>`,
+			  computed: {
+			    count () {
+			      return this.$store.getters.todoLength;
+			    }
+			  }
+			};
+	
+			
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					
+				},
+				store,
+				methods: {
+					increase(){
+						this.$store.dispatch("increment1", {
+							n: 1
+						});
+					},
+				},
+				components: {
+					Counter,
+					myComponent,
+				}
+			});
+		</script>
+	</body>
+</html>

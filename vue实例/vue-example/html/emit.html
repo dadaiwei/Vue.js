@@ -1,0 +1,79 @@
+<!DOCTYP;E html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="../css/bootstrap.css">
+		<script src='../js/vue.min.js'></script>
+	</head>
+	<body>
+		<div id="app">
+			<input type="text" v-model.number="message">
+			<child-component class="btn" :count="message" @increament="increament"></child-component>
+		</div>
+		<script>
+			Vue.component("child-component", {
+				props: {
+					count: {
+						type: Number,
+						required: true,
+						validator: function (value) {
+					        return value > 100
+					      }
+					}
+				},
+				template: "<button type='button' class='btn-default' @click='increamentCounter'>{{computedCount}}</button>",
+				data(){
+					return {
+						count: 100
+					}
+				},
+				computed: {
+					computedCount(){
+						return this.count;
+					}
+				},
+				methods: {
+					increamentCounter(){
+						++this.count;
+						this.$emit("increament", {
+							count: this.count
+						});
+					}
+				},
+				watch: {
+					count(newValue, oldValue){
+						console.log(newValue, oldValue);
+					}
+				},
+				mounted(){
+					console.log(this.$el);
+					console.log(this.$data);
+				},
+				filters: {
+					
+				}
+			});
+			
+			var Event = new Vue();
+			
+			var app = new Vue({
+				el: '#app',
+				data: {
+					message: 100				
+				},
+				methods: {
+					increament(data){
+						this.message = data.count;
+					}
+				},
+				mounted() {
+					Event.$on('increament',function(c){
+						console.log(1);
+    					console.log(c);
+    				})
+				}
+			});
+		</script>
+	</body>
+</html>

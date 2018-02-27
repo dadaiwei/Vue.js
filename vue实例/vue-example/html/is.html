@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src='../js/vue.min.js'></script>
+	</head>
+	<body>
+		<div id="app">
+			<input type="text" v-model="message">
+			<ul>
+				<li is="my-component" :title="message"></li>
+			</ul>
+		</div>
+		<script>
+			var app = new Vue({
+				el: "#app",
+				data:{
+					message: "This is message"
+				},
+				methods: {
+					
+				},
+				components: {
+					'my-component': {
+						props: {
+							title: String,
+							required: true
+						},
+						template: '<p>{{title}}</p>'
+					}
+				}
+			});
+		</script>
+	</body>
+</html>

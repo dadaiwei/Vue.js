@@ -1,0 +1,96 @@
+<!DOCTYPsE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="../css/bootstrap.css">
+		<script src='../js/vue.min.js'></script>
+		 <script src='../js/axios.min.js'></script>
+		 <script src="https://cdn.bootcss.com/vue-resource/1.4.0/vue-resource.js"></script>
+	</head>
+	<body>
+		 <div id="app">
+		 	<button type="button" @click="getContent">获取内容</button>
+		 	<br/>
+		 	<p>{{computedMessage}}</p>
+		 	<p>{{numbers}}</p>
+		 </div>
+		 <script>
+//		 	Vue.http.get("../json/message1.json")
+//		 	.then(function(res){
+//		 		console.log(res);
+//		 	}, function(err){
+//		 		console.log(err);
+//		 	})
+		 	
+		 	function getContent1(){
+		 		var CancelToken = axios.CancelToken; 
+				var source = CancelToken.source();
+				
+				axios.get('/user/12345',{
+				  cancelToken: source.token
+				}).catch(function(thrown){
+				  if(axios.isCancel(thrown)){
+				    console.log('Request canceled',thrown.message);
+				  }else {
+				    //handle error
+				  }
+			});
+
+				source.cancel("操作被用户取消");
+
+		 	}
+		 	
+		 	function getContent2(){
+		 		return axios.get("../json/message2.json");
+		 	}
+		 	
+		 	var app = new Vue({
+		 		el: "#app",
+		 		data: {
+		 			message: 'default message',
+		 			numbers: 0
+		 		},
+		 		computed: {
+		 			computedMessage(){
+		 				var result = "";
+		 				var arr = this.message.split(" ");
+		 				for(var i = 0; i < arr.length; i++){
+		 				  result +=	arr[i].charAt(0).toUpperCase() + arr[i].slice(1) + " ";
+		 				}
+		 				return result;
+		 			}
+		 		},
+		 		mounted(){
+		 			this.$http.get("../json/message1.json")
+				 	.then(function(res){
+				 		console.log(res);
+				 	}, function(err){
+				 		console.log(err);
+				 	})
+		 		},
+		 		methods: {
+		 			getContent(){
+		 				var self = this;
+		 				var promises = [getContent1(), getContent2()];
+		 				axios.all(promises)
+		 					 .then(axios.spread(function(res1, res2){
+		 					 	self.message = res1.data.content + " " + res2.data.content;
+		 					 	self.numbers = parseInt(res1.data.number) + parseInt(res2.data.number)
+		 					 }))
+		 					 .catch(function(err){
+		 					 	console.log(err);
+		 					 })
+		 			}
+		 		}
+		 	});
+		 	
+		 	var iterator1 = axios.interceptors.response.use(function(res){
+		 		console.log(res);
+		 	}, function(err){
+		 		return Promise.reject(err);
+		 	});
+		 	axios.interceptors.response.eject(iterator1);
+		 </script>
+	</body>
+</html>

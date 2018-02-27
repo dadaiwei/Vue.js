@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/vue-router.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			<p>
+				<router-link to="/home">Home</router-link>
+				<router-link to="/news">News</router-link>
+				<router-link :to="{name:'user', params:{id:1}}">User1</router-link>
+				<router-link :to="{name:'user', params:{id:2}}">User2</router-link>
+				<router-link to="/components">Components</router-link>
+			</p>
+			<router-view></router-view>
+			<router-view name="user"></router-view>
+			<router-view name="post"></router-view>
+			<button type="button" @click="goBack">后退</button>
+		</div>
+		<script>
+			var home = {
+				template: "<div>我是主页</div>"
+			};
+			
+			var news = {
+				template: "<div>我是新闻</div>"	
+			};
+			
+			var user = {
+				template: `<div>
+								<h2>这是User{{$route.params.id}}</h2>
+								<p>
+									<router-link :to="{name: 'profile', params:{id: $route.params.id}}">Profile</router-link>
+									<router-link :to="{name: 'posts', params:{id: $route.params.id}}">Posts</router-link>
+								</p>
+								<router-view><router-view>
+							</div>`,
+				mounted(){
+					console.log("mounted");
+				},
+				watch:{
+					
+				}
+			};
+			
+			var userProfile = {
+				template: "<div>我是{{$route.params.id}}userProfile</div>"	
+			};
+			
+			var userPosts = {
+				template: "<div>我是userPosts</div>"	
+			};
+			
+			var routes = [
+				{
+					path: "/home",
+					component: home,
+					 beforeRouteLeave (to, from , next) {
+					 	console.log(1);
+					  const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
+						  if (answer) {
+						    next()
+						  } else {
+						    next(false)
+						  }
+					},
+					 name: "home"
+				},
+				{
+					path: "/news",
+					name: "news",
+					component: news
+				},
+				{
+					path: "/user/:id", 
+					component: user,
+					name: "user",
+					props: true,
+					children: [
+						{
+							path: "profile",
+							name:"profile",
+							component: userProfile 
+						},
+						{
+							path: "posts",
+							name: "posts",
+							component: userPosts 
+						}
+					]
+				},
+				{
+					path: "/components",
+					components: {
+						default: news,
+						user: user,
+						post: userPosts 
+					}
+				},
+				{
+					path: "*", 
+					component: home
+				}
+			];
+			
+			var router = new  VueRouter({
+				mode: 'history',
+				routes
+			});
+			
+			router.afterEach((to, from, next) => {
+			  document.title = to.name;
+			});
+			
+			new Vue({
+				el: "#app",
+				router,
+				methods: {
+					goBack(){
+						this.$router.go(-1);
+					}
+				}
+			});
+			
+		</script>
+	</body>
+</html>

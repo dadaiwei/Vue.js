@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="../js/vue.min.js"></script>	
+	</head>
+	<body>
+		<div id="watch-example">
+			<input type="radio" value="A" v-model="currentView">A
+			<input type="radio" value="B" v-model="currentView">B
+			<keep-alive>
+				<component :is="currentView"></component>
+			</keep-alive>
+			
+   		 </div>
+		<script>
+			 var vm = new Vue({
+	            el: "#watch-example",
+	            data:{
+	                currentView:"A"
+	            },
+	            components:{
+	                "A":{
+	                    template:"<div>childA</div>" 
+	                },
+	                "B":{
+	                    template: '<div>childB</div>'
+	                },
+	            		
+	            }
+	        })
+		</script>
+	</body>
+</html>

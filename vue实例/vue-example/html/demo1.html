@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="../css/bootstrap.css">
+		<style>
+			#app{
+				margin-top: 30px;
+			}
+			.search-style{
+				height: 34px;
+				line-height: 34px;
+			}
+			.thead-style{
+				background: #42B983;
+				text-align: center;
+			}
+			.th-style{
+				width: 50%;
+				text-align: center;
+				color: #FFFFFF;
+				opacity: 0.6;
+				cursor: pointer;
+			}
+			.td-style{
+				text-align: center;
+			}
+			.asc{
+				border-left: 4px solid transparent;
+				border-right: 4px solid transparent;
+				border-bottom: 4px solid #FFFFFF;
+			}
+			.dsc{
+				border-left: 4px solid transparent;
+				border-right: 4px solid transparent;
+				border-top: 4px solid red;
+			}
+			.arrow{
+				display: inline-block;
+				vertical-align: middle;
+				width: 0;
+				height: 0;
+			}
+			.click-th{
+				opacity: 1;
+			}
+		</style>
+		<script src='../js/vue.min.js'></script>
+	</head>
+	<body>
+		<div id="app">
+			<div class="form-group col-md-6">
+				<label class="col-md-1 search-style">Search</label>
+				<div class="col-md-4">
+					<input type="text" class="form-control " v-model="searchValue">
+				</div>	
+			</div>
+			<div style="float: none;clear: both;">
+				<div class="col-md-4">
+					<table class="table table-bordered table-hover table-responsive">
+						<thead class="thead-style">
+							<tr>
+								<th class="th-style" v-for="h in headers" :class="{'click-th':clickStyle[h]}" @click="sort(h)">{{h|capitalize}}
+									<span class="arrow" :class="asc[h]?'asc':'dsc'"></span>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="item in filterData">
+								<td class="td-style" v-for="h in headers">
+									{{item[h]}}
+								</td>
+							</tr>
+							<tr v-show="!filterData.length">
+								<td colspan="2" style="text-align: center;">暂无内容</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>	
+			</div>
+		</div>
+		<script>
+			
+			var app = new Vue({
+				el: "#app",
+				data: {
+					searchValue: '',
+					asc: {
+						name: true,
+						power: true
+					},
+					clickStyle: {
+						name: false,
+						power: false
+					},
+					headers: ["name", "power"],
+					gridData: [
+			  			{name:'Chuck Norris',power: Infinity},
+			  			{name:'bruce Lee',power:9000},
+			  			{name:'Jackie chan',power:7000},
+			  			{name:'Jet Li',power:8000}
+			  			]
+				},
+				computed: {
+					filterData(){
+						var searchValue = this.searchValue;
+						return this.gridData.filter(function(item){
+							return (item.name.indexOf(searchValue) != -1) || 
+									(item.power.toString().indexOf(searchValue) != -1);
+						});
+					}
+				},
+				methods: {
+					sort(h){
+						this.asc[h] = !this.asc[h];
+						for(var i = 0; i < this.headers.length; i++){
+							this.clickStyle[this.headers[i]] = false;
+						}
+						this.clickStyle[h] = true;
+						
+						if(this.asc[h]){
+							this.filterData.sort(function(a, b){
+								return a[h] > b[h];
+							});
+						}else{
+							this.filterData.sort(function(a, b){
+								return a[h] < b[h];
+							});
+						}
+					}
+				},
+				watch: {
+					
+				},
+				mounted() {
+					console.log(this.$el);
+					console.log(this.$data);
+				},
+				directives: {
+					
+				},
+				components: {
+					
+				},
+				filters: {
+					capitalize(str){
+						return str.charAt(0).toUpperCase() + str.slice(1);
+					}
+				}
+			});
+		</script>
+	</body>
+</html>
